@@ -31,10 +31,11 @@ namespace Smanager
                 proc.StartInfo.Arguments = "-v";//this is argument
                 proc.EnableRaisingEvents = true;
                 proc.Exited += new EventHandler(dhcp_Exited);
-                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.CreateNoWindow = false;
                 proc.StartInfo.UseShellExecute = false;
                 proc.Start();
-                proc.WaitForExit();
+                proc.WaitForExit(100);
+                DHCP_PID = proc.Id;
             }
             catch (Exception ex)
             {
