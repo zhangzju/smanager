@@ -21,7 +21,7 @@ namespace Smanager
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             Process proc = null;
             try
@@ -31,10 +31,12 @@ namespace Smanager
                 proc.StartInfo.Arguments = "-v";//this is argument
                 proc.EnableRaisingEvents = true;
                 proc.Exited += new EventHandler(dhcp_Exited);
-                proc.StartInfo.CreateNoWindow = false;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.RedirectStandardOutput = true;
                 proc.StartInfo.UseShellExecute = false;
                 proc.Start();
                 proc.WaitForExit(100);
+                proc.OutputDataReceived += new DataReceivedEventHandler(OutputHandler);
                 DHCP_PID = proc.Id;
             }
             catch (Exception ex)
@@ -45,9 +47,20 @@ namespace Smanager
        
         }
 
+        private void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)
+        {
+            if (!String.IsNullOrEmpty(outLine.Data))
+            {
+            StringBuilder sb = new StringBuilder(this.textBox1.Text);
+            this.textBox1.Text = sb.AppendLine(outLine.Data).ToString();
+            this.textBox1.SelectionStart = this.textBox1.Text.Length;
+            this.textBox1.ScrollToCaret();
+            }
+        }
+
         private void dhcp_Exited(object sender, EventArgs e)
         {
-            MessageBox.Show("DHCP is shutting down!");
+            MessageBox.Show(DHCP_PID.ToString());
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -62,8 +75,9 @@ namespace Smanager
                 proc.Exited += new EventHandler(tftp_Exited);
                 proc.StartInfo.CreateNoWindow = false;
                 proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardOutput = true;
                 proc.Start();
-                proc.WaitForExit();
+                proc.WaitForExit(100);
                 TFTP_PID = proc.Id;
             }
             catch (Exception ex)
@@ -75,6 +89,14 @@ namespace Smanager
         private void tftp_Exited(object sender, EventArgs e)
         {
             MessageBox.Show(TFTP_PID.ToString());
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var ini = new IniFile();
+            ini.Load(path + "\\DHCP\\OpenDHCPServer.ini");
+            ini["test1"]["doubleB"] = "not a double";
+            MessageBox.Show(ini.GetContents());
         }
     }
 }
