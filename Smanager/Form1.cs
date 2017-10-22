@@ -63,7 +63,7 @@ namespace Smanager
             MessageBox.Show(DHCP_PID.ToString());
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
             Process proc = null;
             try
@@ -72,10 +72,10 @@ namespace Smanager
                 proc.StartInfo.FileName = path + "\\TFTP\\OpenTFTPServerMT.exe";
                 proc.StartInfo.Arguments = "-v";//this is argument
                 proc.EnableRaisingEvents = true;
-                proc.Exited += new EventHandler(tftp_Exited);
+                proc.Exited += new EventHandler(Tftp_Exited);
                 proc.StartInfo.CreateNoWindow = false;
                 proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardOutput = false;
                 proc.Start();
                 proc.WaitForExit(100);
                 TFTP_PID = proc.Id;
@@ -86,17 +86,42 @@ namespace Smanager
             }
         }
 
-        private void tftp_Exited(object sender, EventArgs e)
+        private void Tftp_Exited(object sender, EventArgs e)
         {
             MessageBox.Show(TFTP_PID.ToString());
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             var ini = new IniFile();
             ini.Load(path + "\\DHCP\\OpenDHCPServer.ini");
             ini["test1"]["doubleB"] = "not a double";
             MessageBox.Show(ini.GetContents());
+        }
+
+        private void KillProcess(string processName)
+        {
+            Process[] myproc = Process.GetProcesses();
+            foreach (Process item in myproc)
+            {
+                if (item.ProcessName == processName)
+                {
+                    item.Kill();
+                }
+            }
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            Process localById = Process.GetProcessById(DHCP_PID);
+            try
+            {
+                localById.Kill();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
