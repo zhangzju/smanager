@@ -16,9 +16,13 @@ namespace Smanager
         static string path = Application.StartupPath;
         static Int32 DHCP_PID = 0;
         static Int32 TFTP_PID = 0;
+        static string serverPath = Application.StartupPath;
+
         public Form1()
         {
             InitializeComponent();
+
+            this.textBox1.Text = serverPath;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -122,6 +126,31 @@ namespace Smanager
             {
                 throw ex;
             }
+        }
+
+        private void Button1_Click_1(object sender, EventArgs e)
+        {
+            FolderBrowserDialog mainFolder = new FolderBrowserDialog();
+            mainFolder.ShowDialog();
+            serverPath = mainFolder.SelectedPath;
+            this.textBox1.Text = mainFolder.SelectedPath;
+        }
+
+        private void Label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button2_Click_1(object sender, EventArgs e)
+        {
+            macbin macbin = new macbin();
+            macbin.Show();
+        }
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            Server server = new Server();
+            server.Show();
         }
     }
 }
