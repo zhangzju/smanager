@@ -112,6 +112,14 @@ namespace Smanager
             MessageBox.Show(ini.GetContents());
         }
 
+        private int configTftpPath(string path)
+        {
+            var ini = new IniFile();
+            ini.Load(Application.StartupPath + "\\TFTP\\OpenTFTPServerMT.ini");
+            ini["Home"]["routers"] = path;
+            return 0;
+        }
+
         private void KillProcess(string processName)
         {
             Process[] myproc = Process.GetProcesses();
@@ -149,6 +157,8 @@ namespace Smanager
             {
                 this.comboBox1.Items.Add(NextFolder.Name);
             }
+
+            configTftpPath(serverPath);
         }
 
         private void Label3_Click(object sender, EventArgs e)
