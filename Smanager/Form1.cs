@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
 
 namespace Smanager
 {
@@ -17,12 +18,17 @@ namespace Smanager
         static Int32 DHCP_PID = 0;
         static Int32 TFTP_PID = 0;
         static string serverPath = Application.StartupPath;
+        static bool serverStatus = false;
 
         public Form1()
         {
             InitializeComponent();
 
             this.textBox1.Text = serverPath;
+            this.comboBox1.Text = "ISP";
+            this.comboBox2.Text = "Model";
+            this.button3.BackColor = System.Drawing.Color.Red;
+            this.button4.BackColor = System.Drawing.Color.Red;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -64,7 +70,9 @@ namespace Smanager
 
         private void dhcp_Exited(object sender, EventArgs e)
         {
-            MessageBox.Show(DHCP_PID.ToString());
+            //MessageBox.Show(DHCP_PID.ToString());
+            //this.richTextBox1.AppendText("DHCP exited!\n");
+
         }
 
         private void Button3_Click(object sender, EventArgs e)
@@ -92,7 +100,8 @@ namespace Smanager
 
         private void Tftp_Exited(object sender, EventArgs e)
         {
-            MessageBox.Show(TFTP_PID.ToString());
+            //MessageBox.Show(TFTP_PID.ToString());
+            //this.richTextBox1.AppendText("TFTP exited!\n");
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -134,6 +143,12 @@ namespace Smanager
             mainFolder.ShowDialog();
             serverPath = mainFolder.SelectedPath;
             this.textBox1.Text = mainFolder.SelectedPath;
+
+            DirectoryInfo TheFolder = new DirectoryInfo(mainFolder.SelectedPath);
+            foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories())
+            {
+                this.comboBox1.Items.Add(NextFolder.Name);
+            }
         }
 
         private void Label3_Click(object sender, EventArgs e)
@@ -151,6 +166,150 @@ namespace Smanager
         {
             Server server = new Server();
             server.Show();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if(serverStatus)
+            {
+                int shutDownDHCP = shutDownServer(DHCP_PID);
+                int shutDownTFTP = shutDownServer(TFTP_PID);
+
+                if(shutDownDHCP == 0 && shutDownTFTP == 0)
+                {
+                    this.button3.BackColor = System.Drawing.Color.Red;
+                    this.button4.BackColor = System.Drawing.Color.Red;
+                    serverStatus = false;
+                }
+            }
+            else
+            {
+                if (isPortUsed(67))
+                {
+                    startDHCP();
+                    this.button3.BackColor = System.Drawing.Color.Lime;
+                }
+                else
+                {
+                    //MessageBox.Show("Warning: the port of DHCP is occupied!");
+                    this.richTextBox1.AppendText("Warning: the port of DHCP is occupied!\n");
+                }
+
+                if(isPortUsed(69))
+                {
+                    startTFTP();
+                    this.button4.BackColor = System.Drawing.Color.Lime;
+                }
+                else
+                {
+                    //MessageBox.Show("Warning: the port of TFTP is occupied!");
+                    this.richTextBox1.AppendText("Warning: the port of TFTP is occupied!\n");
+
+                }
+
+                serverStatus = true;
+            }         
+        }
+
+        private bool isPortUsed(int port)
+        {
+            Process p = new Process();
+            p.StartInfo = new ProcessStartInfo("netstat", "-a");
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.Start();
+            string result = p.StandardOutput.ReadToEnd();
+            if (result.IndexOf(Environment.MachineName.ToLower() + ":"+ port) >= 0)
+                return false;
+            else
+            {
+                return true;
+            }       
+        }
+
+        private int startTFTP()
+        {
+            Process proc = null;
+            try
+            {
+                proc = new Process();
+                proc.StartInfo.FileName = path + "\\TFTP\\OpenTFTPServerMT.exe";
+                proc.StartInfo.Arguments = "-v";//this is argument
+                proc.EnableRaisingEvents = true;
+                proc.Exited += new EventHandler(Tftp_Exited);
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.Start();
+                proc.WaitForExit(100);
+                proc.OutputDataReceived += new DataReceivedEventHandler(OutputHandler);
+                TFTP_PID = proc.Id;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception Occurred :{0},{1}", ex.Message, ex.StackTrace.ToString());
+                return -1;
+            }
+            //MessageBox.Show("TFTP started");
+            this.richTextBox1.AppendText("TFTP started\n");
+            return 0;
+        }
+
+        private int startDHCP()
+        {
+            Process proc = null;
+            try
+            {
+                proc = new Process();
+                proc.StartInfo.FileName = path + "\\DHCP\\OpenDHCPServer.exe";
+                proc.StartInfo.Arguments = "-v";//this is argument
+                proc.EnableRaisingEvents = true;
+                proc.Exited += new EventHandler(dhcp_Exited);
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.Start();
+                proc.WaitForExit(100);
+                proc.OutputDataReceived += new DataReceivedEventHandler(OutputHandler);
+                DHCP_PID = proc.Id;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception Occurred :{0},{1}", ex.Message, ex.StackTrace.ToString());
+                return -1;
+            }
+            //MessageBox.Show("DHCP started");
+            this.richTextBox1.AppendText("DHCP started\n");
+            return 0;
+        }
+
+        private int  shutDownServer(int pid)
+        {
+            Process localById = Process.GetProcessById(pid);
+            try
+            {
+                this.richTextBox1.AppendText("Process " + pid + " was terminated!\n");
+                localById.Kill();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                this.richTextBox1.AppendText("Process "+ pid + " could not be terminated!\n");
+                return -1;
+                throw ex;
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //MessageBox.Show(serverPath + "\\" + this.comboBox1.Text);
+            DirectoryInfo TheFolder = new DirectoryInfo(serverPath + "\\" + this.comboBox1.Text);
+            foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories())
+            {
+                this.comboBox2.Items.Add(NextFolder.Name);
+            }
         }
     }
 }
