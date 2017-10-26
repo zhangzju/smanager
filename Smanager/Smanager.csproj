@@ -53,6 +53,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Ini.cs" />
+    <Compile Include="iniConf.cs" />
     <Compile Include="macbin.cs">
       <SubType>Form</SubType>
     </Compile>

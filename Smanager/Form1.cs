@@ -19,6 +19,8 @@ namespace Smanager
         static Int32 TFTP_PID = 0;
         static string serverPath = Application.StartupPath;
         static bool serverStatus = false;
+        static string ispName = "TM";
+        static string modelName = "C20";
 
         public Form1()
         {
@@ -114,9 +116,14 @@ namespace Smanager
 
         private int configTftpPath(string path)
         {
-            var ini = new IniFile();
-            ini.Load(Application.StartupPath + "\\TFTP\\OpenTFTPServerMT.ini");
-            ini["Home"]["routers"] = path;
+            //var ini = new IniFile();
+            //ini.Load(Application.StartupPath + "\\TFTP\\OpenTFTPServerMT.ini");
+            //ini["HOME"]["Agile"] = path;
+            //this.richTextBox1.AppendText("TFTP path is " + path + " \n");
+            //MessageBox.Show(ini.GetContents());
+            string iniFile = Application.StartupPath + "\\TFTP\\OpenTFTPServerMT.ini";
+            INIOperationClass.INIWriteValue(iniFile, "HOME", "Agile", serverPath);
+            this.richTextBox1.AppendText("TFTP path is " + path + " \n");
             return 0;
         }
 
@@ -158,7 +165,7 @@ namespace Smanager
                 this.comboBox1.Items.Add(NextFolder.Name);
             }
 
-            configTftpPath(serverPath);
+            //configTftpPath(serverPath);
         }
 
         private void Label3_Click(object sender, EventArgs e)
@@ -320,6 +327,15 @@ namespace Smanager
             {
                 this.comboBox2.Items.Add(NextFolder.Name);
             }
+            ispName = this.comboBox1.Text;
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            modelName = this.comboBox2.Text;
+            string TftpPath;
+            TftpPath = serverPath + "\\" + ispName + "\\" + modelName;
+            configTftpPath(TftpPath);
         }
     }
 }
