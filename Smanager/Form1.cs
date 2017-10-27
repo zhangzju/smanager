@@ -157,6 +157,7 @@ namespace Smanager
             FolderBrowserDialog mainFolder = new FolderBrowserDialog();
             mainFolder.ShowDialog();
             serverPath = mainFolder.SelectedPath;
+            //MessageBox.Show(serverPath);
             this.textBox1.Text = mainFolder.SelectedPath;
 
             DirectoryInfo TheFolder = new DirectoryInfo(mainFolder.SelectedPath);
