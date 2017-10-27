@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
+using System.Net.NetworkInformation;
+using System.Net;
 
 namespace Smanager
 {
@@ -42,7 +44,7 @@ namespace Smanager
                 proc.StartInfo.FileName = path+ "\\DHCP\\OpenDHCPServer.exe";
                 proc.StartInfo.Arguments = "-v";//this is argument
                 proc.EnableRaisingEvents = true;
-                proc.Exited += new EventHandler(dhcp_Exited);
+                proc.Exited += new EventHandler(Dhcp_Exited);
                 proc.StartInfo.CreateNoWindow = true;
                 proc.StartInfo.RedirectStandardOutput = true;
                 proc.StartInfo.UseShellExecute = false;
@@ -70,7 +72,7 @@ namespace Smanager
             }
         }
 
-        private void dhcp_Exited(object sender, EventArgs e)
+        private void Dhcp_Exited(object sender, EventArgs e)
         {
             //MessageBox.Show(DHCP_PID.ToString());
             //this.richTextBox1.AppendText("DHCP exited!\n");
@@ -114,7 +116,7 @@ namespace Smanager
             MessageBox.Show(ini.GetContents());
         }
 
-        private int configTftpPath(string path)
+        private int ConfigTftpPath(string path)
         {
             //var ini = new IniFile();
             //ini.Load(Application.StartupPath + "\\TFTP\\OpenTFTPServerMT.ini");
@@ -186,12 +188,13 @@ namespace Smanager
             server.Show();
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void Button5_Click(object sender, EventArgs e)
         {
-            if(serverStatus)
+            this.richTextBox1.AppendText(serverStatus.ToString());
+            if (serverStatus)
             {
-                int shutDownDHCP = shutDownServer(DHCP_PID);
-                int shutDownTFTP = shutDownServer(TFTP_PID);
+                int shutDownDHCP = ShutDownServer(DHCP_PID);
+                int shutDownTFTP = ShutDownServer(TFTP_PID);
 
                 if(shutDownDHCP == 0 && shutDownTFTP == 0)
                 {
@@ -201,21 +204,20 @@ namespace Smanager
                 }
             }
             else
-            {
-                if (isPortUsed(67))
+            {               
+                if (PortInUse(67))
                 {
-                    startDHCP();
-                    this.button3.BackColor = System.Drawing.Color.Lime;
-                }
-                else
-                {
-                    //MessageBox.Show("Warning: the port of DHCP is occupied!");
                     this.richTextBox1.AppendText("Warning: the port of DHCP is occupied!\n");
                 }
+                else
+                {                   
+                    StartDHCP();
+                    this.button3.BackColor = System.Drawing.Color.Lime;
+                }
 
-                if(isPortUsed(69))
+                if(!PortInUse(69))
                 {
-                    startTFTP();
+                    StartTFTP();
                     this.button4.BackColor = System.Drawing.Color.Lime;
                 }
                 else
@@ -229,10 +231,12 @@ namespace Smanager
             }         
         }
 
-        private bool isPortUsed(int port)
+        private bool IsPortUsed(int port)
         {
-            Process p = new Process();
-            p.StartInfo = new ProcessStartInfo("netstat", "-a");
+            Process p = new Process
+            {
+                StartInfo = new ProcessStartInfo("netstat", "-a")
+            };
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -247,7 +251,26 @@ namespace Smanager
             }       
         }
 
-        private int startTFTP()
+        public static bool PortInUse(int port)
+        {
+            bool inUse = false;
+
+            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
+
+            foreach (IPEndPoint endPoint in ipEndPoints)
+            {
+                if (endPoint.Port == port)
+                {
+                    inUse = true;
+                    break;
+                }
+            }
+
+            return inUse;
+        }
+
+        private int StartTFTP()
         {
             Process proc = null;
             try
@@ -275,7 +298,7 @@ namespace Smanager
             return 0;
         }
 
-        private int startDHCP()
+        private int StartDHCP()
         {
             Process proc = null;
             try
@@ -284,7 +307,7 @@ namespace Smanager
                 proc.StartInfo.FileName = path + "\\DHCP\\OpenDHCPServer.exe";
                 proc.StartInfo.Arguments = "-v";//this is argument
                 proc.EnableRaisingEvents = true;
-                proc.Exited += new EventHandler(dhcp_Exited);
+                proc.Exited += new EventHandler(Dhcp_Exited);
                 proc.StartInfo.CreateNoWindow = true;
                 proc.StartInfo.RedirectStandardOutput = true;
                 proc.StartInfo.UseShellExecute = false;
@@ -303,11 +326,11 @@ namespace Smanager
             return 0;
         }
 
-        private int  shutDownServer(int pid)
-        {
-            Process localById = Process.GetProcessById(pid);
+        private int  ShutDownServer(int pid)
+        {            
             try
             {
+                Process localById = Process.GetProcessById(pid);
                 this.richTextBox1.AppendText("Process " + pid + " was terminated!\n");
                 localById.Kill();
                 return 0;
@@ -320,7 +343,7 @@ namespace Smanager
             }
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             //MessageBox.Show(serverPath + "\\" + this.comboBox1.Text);
             DirectoryInfo TheFolder = new DirectoryInfo(serverPath + "\\" + this.comboBox1.Text);
@@ -331,12 +354,12 @@ namespace Smanager
             ispName = this.comboBox1.Text;
         }
 
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             modelName = this.comboBox2.Text;
             string TftpPath;
             TftpPath = serverPath + "\\" + ispName + "\\" + modelName;
-            configTftpPath(TftpPath);
+            ConfigTftpPath(TftpPath);
         }
     }
 }
