@@ -346,7 +346,7 @@ namespace Smanager
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             //MessageBox.Show(serverPath + "\\" + this.comboBox1.Text);
-            DirectoryInfo TheFolder = new DirectoryInfo(serverPath + "\\" + this.comboBox1.Text);
+            DirectoryInfo TheFolder = new DirectoryInfo(serverPath + "/" + this.comboBox1.Text);
             foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories())
             {
                 this.comboBox2.Items.Add(NextFolder.Name);
@@ -360,6 +360,16 @@ namespace Smanager
             string TftpPath;
             TftpPath = serverPath + "\\" + ispName + "\\" + modelName;
             ConfigTftpPath(TftpPath);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            CheckDirIsValid(serverPath + "\\" + ispName + "\\" + modelName);
+        }
+
+        private void CheckDirIsValid(string path)
+        {
+            MessageBox.Show(path);
         }
     }
 }

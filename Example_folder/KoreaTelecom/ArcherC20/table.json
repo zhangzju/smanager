@@ -1,0 +1,21 @@
+{
+    "magit": "TP-LINK",
+    "config": {
+        "name": "conf.bin",
+        "size": 5,
+        "space": 8,
+        "offset": 4
+    },
+    "kernel": {
+        "name": "linux.7z",
+        "size": 1359,
+        "space": 1380,
+        "offset": 24
+    },
+    "rootfs": {
+        "name": "rootfs.C20V4",
+        "size": 4888,
+        "space": 4900,
+        "offset": 1424
+    }
+}
