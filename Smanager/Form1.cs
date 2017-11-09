@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
 using System.Net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Smanager
 {
@@ -364,12 +366,23 @@ namespace Smanager
 
         private void button7_Click(object sender, EventArgs e)
         {
+            string initFile = serverPath + "\\" + ispName + "\\" + modelName + @"\table.json";
             CheckDirIsValid(serverPath + "\\" + ispName + "\\" + modelName);
+            string initInfo = File.ReadAllText(initFile);
+            var jObject = JObject.Parse(initInfo);
+            MessageBox.Show(jObject["kernel"]["name"].ToString());
         }
 
         private void CheckDirIsValid(string path)
         {
-            MessageBox.Show(path);
+            if (File.Exists(path + @"\table.json"))
+            {
+                this.richTextBox1.AppendText("Load the table.json!");
+            }
+            else
+            {
+                MessageBox.Show("This dir is invalid!");
+            }
         }
     }
 }
