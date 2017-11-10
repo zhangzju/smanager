@@ -369,8 +369,7 @@ namespace Smanager
             string initFile = serverPath + "\\" + ispName + "\\" + modelName + @"\table.json";
             CheckDirIsValid(serverPath + "\\" + ispName + "\\" + modelName);
             string initInfo = File.ReadAllText(initFile);
-            var jObject = JObject.Parse(initInfo);
-            MessageBox.Show(jObject["kernel"]["name"].ToString());
+            unionFileGen(initInfo);
         }
 
         private void CheckDirIsValid(string path)
@@ -384,5 +383,29 @@ namespace Smanager
                 MessageBox.Show("This dir is invalid!");
             }
         }
+
+        private int unionFileGen(string initInfo)
+        {
+            var table = JObject.Parse(initInfo);
+            string unionPath = serverPath + "\\" + ispName + "\\" + modelName + @"\union.bin";
+            MessageBox.Show(unionPath);
+            FileStream unionFileStream = File.OpenWrite(unionPath);
+
+            unionFileStream.Seek(0, SeekOrigin.Begin);
+            byte[] initInfoByte = System.Text.Encoding.Default.GetBytes(initInfo);
+            unionFileStream.Write(initInfoByte, 0, initInfoByte.Length);
+
+
+            if(table["config"]["flag"].ToString() == "1")
+            {
+                string filename = table["config"]["name"].ToString();
+                string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
+                Int32 size = Convert.ToInt32(table["config"]["space"].ToString());
+                StreamReader conf = new StreamReader(fullpath);
+            }
+
+            return 0;
+        }
+
     }
 }
