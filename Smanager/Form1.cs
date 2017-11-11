@@ -368,8 +368,7 @@ namespace Smanager
         {
             string initFile = serverPath + "\\" + ispName + "\\" + modelName + @"\table.json";
             CheckDirIsValid(serverPath + "\\" + ispName + "\\" + modelName);
-            string initInfo = File.ReadAllText(initFile);
-            unionFileGen(initInfo);
+            unionFileGen(initFile);
         }
 
         private void CheckDirIsValid(string path)
@@ -384,26 +383,63 @@ namespace Smanager
             }
         }
 
-        private int unionFileGen(string initInfo)
+        private int unionFileGen(string initFile)
         {
+            string initInfo = File.ReadAllText(initFile);
             var table = JObject.Parse(initInfo);
             string unionPath = serverPath + "\\" + ispName + "\\" + modelName + @"\union.bin";
             MessageBox.Show(unionPath);
-            FileStream unionFileStream = File.OpenWrite(unionPath);
+            BinaryWriter unionFileWriter = new BinaryWriter(new FileStream(unionPath, FileMode.OpenOrCreate, FileAccess.ReadWrite));
 
-            unionFileStream.Seek(0, SeekOrigin.Begin);
-            byte[] initInfoByte = System.Text.Encoding.Default.GetBytes(initInfo);
-            unionFileStream.Write(initInfoByte, 0, initInfoByte.Length);
+            unionFileWriter.Seek(0, SeekOrigin.Begin);
+            //byte[] initInfoByte = System.Text.Encoding.Default.GetBytes(initInfo);
+
+            BinaryReader initInfoStream = new BinaryReader(new FileStream(initFile, FileMode.OpenOrCreate, FileAccess.ReadWrite));
+            byte[] initInfoByte = initInfoStream.ReadBytes(4 * 128);
+            unionFileWriter.Seek(0, SeekOrigin.Begin);
+            unionFileWriter.Write(initInfoByte, 0, initInfoByte.Length);
 
 
             if(table["config"]["flag"].ToString() == "1")
             {
                 string filename = table["config"]["name"].ToString();
                 string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
-                Int32 size = Convert.ToInt32(table["config"]["space"].ToString());
-                StreamReader conf = new StreamReader(fullpath);
+                Int32 size = Convert.ToInt32(table["config"]["size"].ToString());
+                Int32 offset = Convert.ToInt32(table["config"]["offset"].ToString());
+                BinaryReader confStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
+                byte[] confByte = confStream.ReadBytes(size * 128);
+                unionFileWriter.Seek(4 * 128, SeekOrigin.Begin);
+                unionFileWriter.Write(confByte, 0, confByte.Length);
             }
 
+            if(table["kernel"]["flag"].ToString() == "1")
+            {
+                string filename = table["kernel"]["name"].ToString();
+                string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
+                Int32 size = Convert.ToInt32(table["kernel"]["size"].ToString());
+                Int32 offset = Convert.ToInt32(table["kernel"]["offset"].ToString());
+                BinaryReader kernelStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
+                byte[] confByte = kernelStream.ReadBytes(size * 128);
+                unionFileWriter.Seek(offset * 128, SeekOrigin.Begin);
+                unionFileWriter.Write(confByte, 0, confByte.Length);
+
+            }
+
+            if (table["rootfs"]["flag"].ToString() == "1")
+            {
+                string filename = table["rootfs"]["name"].ToString();
+                string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
+                Int32 size = Convert.ToInt32(table["rootfs"]["size"].ToString());
+                Int32 offset = Convert.ToInt32(table["rootfs"]["offset"].ToString());
+                BinaryReader rootfsStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
+                byte[] rootfsByte = rootfsStream.ReadBytes(size * 128);
+                unionFileWriter.Seek(offset * 128, SeekOrigin.Begin);
+                unionFileWriter.Write(rootfsByte, 0, rootfsByte.Length);
+
+            }
+
+
+            unionFileWriter.Close();
             return 0;
         }
 
