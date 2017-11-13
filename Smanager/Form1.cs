@@ -407,8 +407,8 @@ namespace Smanager
                 Int32 size = Convert.ToInt32(table["config"]["size"].ToString());
                 Int32 offset = Convert.ToInt32(table["config"]["offset"].ToString());
                 BinaryReader confStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
-                byte[] confByte = confStream.ReadBytes(size * 128);
-                unionFileWriter.Seek(4 * 128, SeekOrigin.Begin);
+                byte[] confByte = confStream.ReadBytes(size * 1024);
+                unionFileWriter.Seek(4 * 1024, SeekOrigin.Begin);
                 unionFileWriter.Write(confByte, 0, confByte.Length);
             }
 
@@ -419,8 +419,8 @@ namespace Smanager
                 Int32 size = Convert.ToInt32(table["kernel"]["size"].ToString());
                 Int32 offset = Convert.ToInt32(table["kernel"]["offset"].ToString());
                 BinaryReader kernelStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
-                byte[] confByte = kernelStream.ReadBytes(size * 128);
-                unionFileWriter.Seek(offset * 128, SeekOrigin.Begin);
+                byte[] confByte = kernelStream.ReadBytes(size * 1024);
+                unionFileWriter.Seek(offset * 1024, SeekOrigin.Begin);
                 unionFileWriter.Write(confByte, 0, confByte.Length);
 
             }
@@ -432,8 +432,8 @@ namespace Smanager
                 Int32 size = Convert.ToInt32(table["rootfs"]["size"].ToString());
                 Int32 offset = Convert.ToInt32(table["rootfs"]["offset"].ToString());
                 BinaryReader rootfsStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
-                byte[] rootfsByte = rootfsStream.ReadBytes(size * 128);
-                unionFileWriter.Seek(offset * 128, SeekOrigin.Begin);
+                byte[] rootfsByte = rootfsStream.ReadBytes(size * 1024);
+                unionFileWriter.Seek(offset * 1024, SeekOrigin.Begin);
                 unionFileWriter.Write(rootfsByte, 0, rootfsByte.Length);
 
             }
