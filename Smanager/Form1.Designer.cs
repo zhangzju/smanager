@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button7 = new System.Windows.Forms.Button();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -47,7 +48,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.button7 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -72,6 +72,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Configure";
             // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(230, 75);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(109, 23);
+            this.button7.TabIndex = 11;
+            this.button7.Text = "Union.bin gen";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
@@ -81,6 +91,7 @@
             this.checkBox4.TabIndex = 10;
             this.checkBox4.Text = "Kernel";
             this.checkBox4.UseVisualStyleBackColor = true;
+            this.checkBox4.CheckedChanged += new System.EventHandler(this.checkBox4_CheckedChanged);
             // 
             // button2
             // 
@@ -101,6 +112,7 @@
             this.checkBox3.TabIndex = 8;
             this.checkBox3.Text = "Rootfs";
             this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
             // checkBox1
             // 
@@ -111,6 +123,7 @@
             this.checkBox1.TabIndex = 6;
             this.checkBox1.Text = "conf.bin";
             this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // comboBox2
             // 
@@ -247,16 +260,6 @@
             this.richTextBox1.Size = new System.Drawing.Size(286, 153);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(230, 75);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(109, 23);
-            this.button7.TabIndex = 11;
-            this.button7.Text = "Union.bin gen";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // Form1
             // 

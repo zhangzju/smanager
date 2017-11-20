@@ -13,6 +13,7 @@ using System.Net.NetworkInformation;
 using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net.Sockets;
 
 namespace Smanager
 {
@@ -25,6 +26,7 @@ namespace Smanager
         static bool serverStatus = false;
         static string ispName = "TM";
         static string modelName = "C20";
+        static char[] protocol = {'0','0','0','0','0','0','0','0'};
 
         public Form1()
         {
@@ -369,13 +371,18 @@ namespace Smanager
             string initFile = serverPath + "\\" + ispName + "\\" + modelName + @"\table.json";
             CheckDirIsValid(serverPath + "\\" + ispName + "\\" + modelName);
             unionFileGen(initFile);
+            string protocolString = new string(protocol);
+            string ipAddress = GetLocalIP();
+            string option = "\""+"TP-LINK " + ipAddress + " " + protocolString+"\"";
+            this.richTextBox1.AppendText(option);
+            writeConf("dhcp", "GLOBAL_OPTIONS", "66", option);
         }
 
         private void CheckDirIsValid(string path)
         {
             if (File.Exists(path + @"\table.json"))
             {
-                this.richTextBox1.AppendText("Load the table.json!");
+                this.richTextBox1.AppendText("Load the table.json!\n");
             }
             else
             {
@@ -442,6 +449,82 @@ namespace Smanager
             unionFileWriter.Close();
             return 0;
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {   
+            //Set the parameter of protocol(transferred by option 66
+            if(this.checkBox1.Checked == true)
+            {
+                protocol[4] = '1';
+            }else if(this.checkBox1.Checked == false)
+            {
+                protocol[4] = '0';
+            }
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox3.Checked == true)
+            {
+                protocol[5] = '1';
+            }
+            else if (this.checkBox3.Checked == false)
+            {
+                protocol[5] = '0';
+            }
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox4.Checked == true)
+            {
+                protocol[6] = '1';
+            }
+            else if (this.checkBox4.Checked == false)
+            {
+                protocol[6] = '0';
+            }
+        }
+
+        private void writeConf(string filename, string section, string node, string value)
+        {
+            string tftpFile = Application.StartupPath + "\\TFTP\\OpenTFTPServerMT.ini";
+            string dhcpFile = Application.StartupPath + @"\DHCP\OpenDHCPServer.ini";
+            if (filename == "dhcp")
+            {
+                INIOperationClass.INIWriteValue(dhcpFile, section, node, value);
+            }
+            else if (filename == "tftp")
+            {
+                INIOperationClass.INIWriteValue(tftpFile, section, node, value);
+            }
+        }
+
+        public static string GetLocalIP()
+        {
+            try
+            {
+                string HostName = Dns.GetHostName(); //得到主机名  
+                IPHostEntry IpEntry = Dns.GetHostEntry(HostName);
+                for (int i = 0; i < IpEntry.AddressList.Length; i++)
+                {
+                    //从IP地址列表中筛选出IPv4类型的IP地址  
+                    //AddressFamily.InterNetwork表示此IP为IPv4,  
+                    //AddressFamily.InterNetworkV6表示此地址为IPv6类型  
+                    if (IpEntry.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        return IpEntry.AddressList[i].ToString();
+                    }
+                }
+                return "";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("获取本机IP出错:" + ex.Message);
+                return "";
+            }
+        }  
+
 
     }
 }
