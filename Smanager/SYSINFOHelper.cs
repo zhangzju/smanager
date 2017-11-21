@@ -31,27 +31,104 @@ namespace Smanager
 
         private string GetComputerName()
         {
-            throw new NotImplementedException();
+            try
+            {
+                return System.Environment.GetEnvironmentVariable("ComputerName");
+            }
+            catch
+            {
+                return "unknow";
+            }
         }
 
         private string GetSystemType()
         {
-            throw new NotImplementedException();
+            try
+            {
+                string st = "";
+                ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
+                ManagementObjectCollection moc = mc.GetInstances();
+                foreach (ManagementObject mo in moc)
+                {
+                    st = mo["SystemType"].ToString();
+                }
+                moc = null;
+                mc = null;
+                return st;
+            }
+            catch
+            {
+                return "unknow";
+            }
         }
 
         private string GetUserName()
         {
-            throw new NotImplementedException();
+            try
+            {
+                string st = "";
+                ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
+                ManagementObjectCollection moc = mc.GetInstances();
+                foreach (ManagementObject mo in moc)
+                {
+                    st = mo["UserName"].ToString();
+                }
+                moc = null;
+                mc = null;
+                return st;
+            }
+            catch
+            {
+                return "unknow";
+            }
         }
 
         private string GetMacAddress()
         {
-            throw new NotImplementedException();
+            try
+            {
+                //获取网卡硬件地址   
+                string mac = "";
+                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+                ManagementObjectCollection moc = mc.GetInstances();
+                foreach (ManagementObject mo in moc)
+                {
+                    if ((bool)mo["IPEnabled"] == true)
+                    {
+                        mac = mo["MacAddress"].ToString();
+                        break;
+                    }
+                }
+                moc = null;
+                mc = null;
+                return mac;
+            }
+            catch
+            {
+                return "unknow";
+            }
         }
 
         public static string GetCpuID()
         {
-            return "";
+            try
+            {
+                //获取CPU序列号代码   
+                string cpuInfo = "";//cpu序列号   
+                ManagementClass mc = new ManagementClass("Win32_Processor");
+                ManagementObjectCollection moc = mc.GetInstances();
+                foreach (ManagementObject mo in moc)
+                {
+                    cpuInfo = mo.Properties["ProcessorId"].Value.ToString();
+                }
+                moc = null;
+                mc = null;
+                return cpuInfo;
+            }
+            catch
+            {
+                return "unknow";
+            }
         }
         
         public static string GetLocalIP()
