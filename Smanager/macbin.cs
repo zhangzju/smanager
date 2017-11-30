@@ -7,19 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using System.IO;
 
 namespace Smanager
 {
     public partial class macbin : Form
     {
-        public macbin()
-        {
-            InitializeComponent();
-        }
-
-        private void macbin_Load(object sender, EventArgs e)
-        {
-
-        }
+        
     }
 }
