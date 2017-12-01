@@ -39,6 +39,25 @@ namespace Smanager
             this.button4.BackColor = System.Drawing.Color.Red;
         }
 
+        private void PClock (string lockFile)
+        {
+            string lockInfo = File.ReadAllText(lockFile);
+            var table = JObject.Parse(lockInfo);
+            string lockName = table["lock"].ToString();
+            if (lockName == "manufacture")
+            {
+                ispName = table["isp"].ToString();
+                modelName = table["model"].ToString();
+                this.comboBox1.Text = ispName;
+                this.comboBox1.DropDownStyle = comboBox1.DropDownStyle;
+                this.comboBox2.Text = modelName;
+                this.comboBox2.DropDownStyle = comboBox2.DropDownStyle;
+            }
+
+            string netlock = table["netlock"].ToString();
+            string maclock = table["maclock"].ToString();
+        }
+
         private void Button1_Click(object sender, EventArgs e)
         {
             Process proc = null;
@@ -122,11 +141,6 @@ namespace Smanager
 
         private int ConfigTftpPath(string path)
         {
-            //var ini = new IniFile();
-            //ini.Load(Application.StartupPath + "\\TFTP\\OpenTFTPServerMT.ini");
-            //ini["HOME"]["Agile"] = path;
-            //this.richTextBox1.AppendText("TFTP path is " + path + " \n");
-            //MessageBox.Show(ini.GetContents());
             string iniFile = Application.StartupPath + "\\TFTP\\OpenTFTPServerMT.ini";
             INIOperationClass.INIWriteValue(iniFile, "HOME", "Agile", serverPath);
             this.richTextBox1.AppendText("TFTP path is " + path + " \n");
@@ -163,7 +177,16 @@ namespace Smanager
             FolderBrowserDialog mainFolder = new FolderBrowserDialog();
             mainFolder.ShowDialog();
             serverPath = mainFolder.SelectedPath;
-            //MessageBox.Show(serverPath);
+            //Check the PCLock
+            if (File.Exists(serverPath + "\\lock.json"))
+            {
+                PClock(serverPath + "\\lock.json");
+            }
+            else
+            {
+                MessageBox.Show("Invalid path(Error code 002!)\n");
+            }
+            MessageBox.Show(serverPath + "\\lock.json");
             this.textBox1.Text = mainFolder.SelectedPath;
 
             DirectoryInfo TheFolder = new DirectoryInfo(mainFolder.SelectedPath);
@@ -433,6 +456,19 @@ namespace Smanager
             }
 
             if (table["rootfs"]["flag"].ToString() == "1")
+            {
+                string filename = table["rootfs"]["name"].ToString();
+                string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
+                Int32 size = Convert.ToInt32(table["rootfs"]["size"].ToString());
+                Int32 offset = Convert.ToInt32(table["rootfs"]["offset"].ToString());
+                BinaryReader rootfsStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
+                byte[] rootfsByte = rootfsStream.ReadBytes(size * 1024);
+                unionFileWriter.Seek(offset * 1024, SeekOrigin.Begin);
+                unionFileWriter.Write(rootfsByte, 0, rootfsByte.Length);
+
+            }
+
+            if (table["rootfs"]["web"].ToString() == "1")
             {
                 string filename = table["rootfs"]["name"].ToString();
                 string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;

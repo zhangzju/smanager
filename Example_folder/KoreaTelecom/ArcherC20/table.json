@@ -1,5 +1,8 @@
 {
     "magic": "TP-LINK",
+	"lock": "manufacture",
+	"model": "ArcherC20",
+	"ISP": "KoreaTelecom",
     "config": {
 		"flag": 1,
         "name": "conf.bin",
@@ -20,5 +23,12 @@
         "size": 4888,
         "space": 4900,
         "offset": 1392
-    }
+    },
+	"web": {
+		"flag": 1,
+		"name": "web.zip",
+		"size": 1000,
+		"space": 1100,
+		"offset": 6292
+	}
 }

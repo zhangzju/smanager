@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="viewport" content="width=1200px">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="./css/main.css"/>
+    <link rel="stylesheet" href="./css/tpTable.css"/>
+    <link rel="stylesheet" href="./css/pure-min.css"/>
+    <link rel="stylesheet" href="./css/jquery.tpSelect.css"/>
+    <link rel="stylesheet" href="./css/jquery.tpBtnGroup.css"/>
+    <link rel="stylesheet" href="./css/simple-slider.css">
+    <link rel="stylesheet" href="./css/jquery.tpSearchInput.css"/>
+    <link rel="stylesheet" href="./css/jquery.tpAddress.css"/>
+    <link rel="stylesheet" href="./css/jquery.tpInput.css"/>
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico"/>
+    <script src="./js/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="./js/oid_str.js" type="text/javascript"></script>
+    <script src="./js/proxy.js" type="text/javascript"></script>
+    <script src="./js/lib.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        if ($.isMobile() && (document.cookie.search('UserChange=true') === -1)) {
+            window.location.replace('index.mobile.htm');
+        }
+    </script>
+    <script type="text/javascript" src="./locale/language.js"></script>
+    <script type="text/javascript" src="./js/locale.js"></script>
+    <script src="./js/su.js" type="text/javascript"></script>
+    <script src="./js/isp.js" type="text/javascript"></script>
+    <script src="./js/isp3g.js" type="text/javascript"></script>
+    <script src="./js/ispVoIP.js" type="text/javascript"></script>
+    <script src="./js/wireless.js" type="text/javascript"></script>
+    <script src="./js/keycode.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpSelect.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpCheckbox.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpRadio.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpBtnGroup.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpModeSelect.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpTable.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpFile.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpMsg.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpGridSelect.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpInit.js" type="text/javascript"></script>
+    <script src="./js/jquery.mousewheel.js" type="text/javascript"></script>
+    <script src="./js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="./js/simple-slider.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpInput.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpModal.js" type="text/javascript"></script>
+    <script src="./js/corner.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpSearchInput.js" type="text/javascript"></script>
+    <script src="./js/jquery.tpAddress.js" type="text/javascript"></script>
+    <script src="./js/excanvas.js" type="text/javascript"></script>
+    <script src="./js/Chart.js" type="text/javascript"></script>
+    <script src="./js/encrypt.js" type="text/javascript"></script>
+    <script src="./js/ispMgr.js" type="text/javascript" ></script>
+    <!--[if lte IE 8]>
+    <link href="./css/ie.css" rel="stylesheet" type="text/css"/>
+    <![endif]-->
+</head>
+
+<body id="mainBody">
+<div id="horizontalScroll">
+    <div id="top"></div>
+
+    <div id="verticalFixed">
+        <div id="verticalFixed-con">
+            <div id="menu-wrapper">
+                <div id="menu"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="scroll">
+        <div id="base">
+            <div id="base-inner"></div>
+        </div>
+        <div id="con">
+            <div id="main"></div>
+            <div class="clr"></div>
+        </div>
+        <div id="quicksetup-wrapper">
+            <div id="quicksetup"></div>
+        </div>
+        <div id="bot"></div>
+    </div>
+
+    <div id="arrowBg"></div>
+</div>
+<div id="cover" class="nd"></div>
+<div id="mask" class="mask">
+    <div id="cover-loading"></div>
+</div>
+<div id="preload"></div>
+<iframe name="up_frame" id="up_frame" class="nd"></iframe>
+<script type="text/javascript">
+    $.addLoading();
+    var menu_str = $.tpLang.menu_str;
+    var m_str = $.tpLang.m_str;
+    var c_str = $.tpLang.c_str;
+    var s_str = $.tpLang.s_str;
+    var table_str = $.tpLang.table_str;
+    var n_str = {};
+
+    for (var i in $.tpLang) {
+        if ($.tpLang.hasOwnProperty(i) && /_nstr/.test(i)) {
+            n_str[i.replace(/_nstr/g, '')] = $.tpLang[i];
+        }
+    }
+    initIndex();
+    if (INCLUDE_VOIP) {
+        $('head').append('<script src=".\/js\/voice.js" type="text\/javascript"><\/script>');
+    }
+    $.loadBanner("./frame/top.htm", function () {
+        $.loadMenu("./frame/menu.htm");
+        $.loadBot("./frame/bot.htm");
+        $.resize();
+        $.removeLoading();
+    });
+
+    $("#scroll").niceScroll({
+        cursorcolor: "#36444b",
+        cursoropacitymax: 0.15,
+        cursoropacitymin: 0.15,
+        touchbehavior: false,
+        cursorwidth: "8px",
+        cursorborder: "0",
+        cursorborderradius: "4px",
+        horizrailenabled: false
+    });
+
+    if (INCLUDE_CLOUD) {
+
+        var onReceive = function (eObject) {
+            var e = eObject.originalEvent || eObject;
+            if (e.origin !== $.cloudOrigin && e.origin !== "_self" && e.origin != undefined) {
+                //offlienError.html
+                // var name = $("#ul-nav").find(".selected a").attr("name");
+                //$.su.nav.goTo(name, $.su.app.runningModule.name);
+                return;
+            }
+            var data = e.data;
+            if (typeof(e.data) == "string") {
+                data = $.parseJSON(data);
+            }
+            if (data) {
+                switch (data.eType) {
+                    case "ev_token":
+                    {
+                        //token过期，云页面提示用户发生错误，设备只更新token并不对云页面做其他操作，module=null
+                        $.getToken(null, data.updateFlag);
+                        break;
+                    }
+                    case "ev_deviceInfo":
+                    {
+                        $.getDeviceInfo();
+                        break;
+                    }
+                    //iframe resize
+                    case "ev_reset":
+                    {
+                        $.iframeResize($("#cloud-login"), data.height);
+                        break;
+                    }
+                    //cloud request has no response
+                    case "ev_error":
+                    {
+                        $("#cloud-login").attr("src", "./main/offlineError.htm");
+                        $("#cloud-login").css({"height": 300});//offlineError.html's default height
+                        break;
+                    }
+                    //cloud email has been changed, location redirect to root
+                    case "ev_logout":
+                    {
+                        $.act(ACT_CGI, '/cgi/logout');
+                        $.exe();
+                        $.refresh();
+                        break;
+                    }
+                    //pwd has benn changed, send new pwd to server.only owner user will trigger this.
+                    case "ev_changePwd":
+                    {
+                        var password = data.password;
+                        password = $.DES3.decrypt(password);
+//                        password = $.rsa.encrypt($.Base64Encoding(password), $.nn, $.ee);
+                        $.act(ACT_SET, OWNER_INFO, null, null, ["passwd=" + password]);
+                        $.exe();
+                        break;
+                    }
+                    //iframe show after cloud index dom ready, to avoid web change
+                    case "load":
+                    {
+                        var params = {};
+                        params.locale = $.locale.locale;
+                        params.force = true;
+                        params.model = $.model;
+                        params.eType = "ev_init";
+                        var str = JSON.stringify(params);
+                        window.frames["cloud-login"] && window.frames["cloud-login"].postMessage(str, $.cloudOrigin);
+                        $.clearWaitingEvent(); //iframe load success
+                        $.postToken();
+                        $.getDeviceInfo();
+                        $("#cloud-login").show();
+                        break;
+                    }
+                    case "ev_windowResize":
+                    {
+                        var hasFrame = false;
+                        try {
+                            window.frames["cloud-login"] && window.frames["cloud-login"].name;
+                        } catch (error) {
+                            hasFrame = true;
+                        }
+                        if (hasFrame) {
+                            var params = {};
+                            params.eType = "ev_windowResize";
+                            params.windowHeight = $(window).height() - 90;//window's height - headHeight
+                            params.windowWidth = $(window).width();//window's width
+                            params.iframeTop = $("#cloud-login").offset().top //iframe top
+                            var str = JSON.stringify(params);
+                            window.frames["cloud-login"].postMessage(str, $.cloudOrigin);
+                        }
+                    }
+                }
+            }
+        };
+        $(window).on("message", onReceive);
+
+        $(window).on("ev_watingTimeout", function () {//iframe load failed
+            $.clearWaitingEvent();
+            $("#cloud-login").attr("src", "./main/offlineError.htm");
+            $("#cloud-login").css({"height": 300});//offlineError.html's default height
+            $("#cloud-login").show();
+            $.removeLoading();
+
+        });
+    }
+
+</script>
+</body>
+
+</html>
