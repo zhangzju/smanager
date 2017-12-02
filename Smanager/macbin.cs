@@ -23,8 +23,9 @@ namespace Smanager
         private bool ispppoepassword;
         private Int32 pppoepasswordlength;
         private Int32 count;
-        private string outputPath;
+        private string outputPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);  
         private string inputFile;
+        static List<string> titleList = new List<string>();
 
         public macbin()
         {
@@ -69,6 +70,63 @@ namespace Smanager
             outputFolder.ShowDialog();
             outputPath = outputFolder.SelectedPath;
             this.textBox2.Text = outputPath;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            is2gssid = this.checkBox1.Checked;
+            is5gssid = this.checkBox2.Checked;
+            ispppoe = this.radioButton1.Checked;
+            ispppoeusername = this.checkBox3.Checked;
+            ispppoepassword = this.checkBox4.Checked;
+            count = Convert.ToInt32(this.numericUpDown3.Value);
+
+            titleList.Add("MAC Address");
+            if (ispppoe)
+            {
+                titleList.Add("PPPoE Username");
+                titleList.Add("PPPoE Password");
+            }
+            else
+            {
+                titleList.Add("IP Address");
+                titleList.Add("Mask");
+                titleList.Add("Gateway");
+                titleList.Add("DNS");
+            }
+            titleList.Add("2.4GHZ SSID");
+            titleList.Add("5GHZ SSID");
+            titleList.Add("Generate Flag");
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet(DateTime.Now.ToString("yyyy-MM-dd"));
+            IRow row;
+            ICell cell;
+
+            row = sheet.CreateRow(0);
+            int tempcount = 0;
+            foreach (var title in titleList)
+            {
+                cell = row.CreateCell(tempcount);
+                cell.SetCellValue(title);
+                sheet.SetColumnWidth(tempcount, 20 * 256);
+                tempcount++;
+            }
+
+            if (File.Exists(outputPath + @"\Agile-Mac.xlsx"))
+            {
+                File.Delete(outputPath);
+            }
+            try
+            {
+                FileStream sw = File.Create(outputPath);
+                workbook.Write(sw);
+            }
+            catch(Exception error)
+            {
+                MessageBox.Show(error.ToString()+"\n"+"Please Choose another output path!");
+            }
+            
         }
 
       
