@@ -23,13 +23,14 @@ namespace Smanager
         private bool ispppoepassword;
         private Int32 pppoepasswordlength;
         private Int32 count;
-        private string outputPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);  
+        private string outputPath = Application.StartupPath;  
         private string inputFile;
         static List<string> titleList = new List<string>();
 
         public macbin()
         {
             InitializeComponent();
+            this.radioButton1.Checked = true;
 
         }
 
@@ -119,7 +120,7 @@ namespace Smanager
             }
             try
             {
-                FileStream sw = File.Create(outputPath);
+                FileStream sw = File.Create(outputPath + @"\Agile-Mac.xlsx");
                 workbook.Write(sw);
             }
             catch(Exception error)
@@ -127,6 +128,18 @@ namespace Smanager
                 MessageBox.Show(error.ToString()+"\n"+"Please Choose another output path!");
             }
             
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.checkBox1.Checked = false;
+            this.checkBox2.Checked = false;
+            this.checkBox3.Checked = false;
+            this.checkBox4.Checked = false;
+            this.radioButton1.Checked = true;
+            this.numericUpDown1.Value = 0;
+            this.numericUpDown2.Value = 0;
+            this.numericUpDown3.Value = 0;
         }
 
       
