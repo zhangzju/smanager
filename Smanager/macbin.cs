@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.IO;
+using System.Xml;
 
 namespace Smanager
 {
@@ -23,15 +24,24 @@ namespace Smanager
         private bool ispppoepassword;
         private Int32 pppoepasswordlength;
         private Int32 count;
-        private string outputPath = Application.StartupPath;  
+        private string outputPath;  
         private string inputFile;
         static List<string> titleList = new List<string>();
+        private string ispName;
+        private string modelName;
 
-        public macbin()
+        public macbin(string mainPath, string ispname, string modelname)
         {
             InitializeComponent();
             this.radioButton1.Checked = true;
-
+            this.textBox2.Text = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            this.inputFile = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\Agile-Mac.xlsx";
+            this.textBox1.Text = this.inputFile;
+            this.mainPath = mainPath;
+            this.ispppoe = true;
+            this.ispName = ispname;
+            this.modelName = modelname;
+            this.outputPath = this.mainPath + @"\" + this.ispName + @"\" + this.modelName;
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -59,7 +69,7 @@ namespace Smanager
         private void button3_Click(object sender, EventArgs e)
         {
             OpenFileDialog inputDialog = new OpenFileDialog();
-            inputDialog.Filter = "(*.xls)|*.xls";
+            inputDialog.Filter = "xlsx files(*.xls*)|*.xlsx|All files (*.*)|*.*";
             inputDialog.ShowDialog();
             inputFile = inputDialog.InitialDirectory + inputDialog.FileName;
             this.textBox1.Text = inputFile;
@@ -81,6 +91,8 @@ namespace Smanager
             ispppoeusername = this.checkBox3.Checked;
             ispppoepassword = this.checkBox4.Checked;
             count = Convert.ToInt32(this.numericUpDown3.Value);
+            pppoeusernamelength = Convert.ToInt32(this.numericUpDown1.Value);
+            pppoepasswordlength = Convert.ToInt32(this.numericUpDown2.Value);
 
             titleList.Add("MAC Address");
             if (ispppoe)
@@ -114,14 +126,34 @@ namespace Smanager
                 tempcount++;
             }
 
-            if (File.Exists(outputPath + @"\Agile-Mac.xlsx"))
+            for (Int32 index = 0; index < count; index++)
             {
-                File.Delete(outputPath);
+                row = sheet.CreateRow(Convert.ToInt32(index) + 1);
+                if (ispppoe)
+                {
+                    if (ispppoeusername)
+                    {
+                        cell = row.CreateCell(1);
+                        cell.SetCellValue(UTILITYHelper.getRandomizer(pppoeusernamelength, true, true, true, false));
+                    }
+
+                    if(ispppoepassword)
+                    {
+                        cell = row.CreateCell(2);
+                        cell.SetCellValue(UTILITYHelper.getRandomizer(pppoepasswordlength, true, true, true, false));
+                    }
+                }
             }
+
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\Agile-Mac.xlsx"))
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\Agile-Mac.xlsx");
+                }
             try
             {
-                FileStream sw = File.Create(outputPath + @"\Agile-Mac.xlsx");
+                FileStream sw = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\Agile-Mac.xlsx");
                 workbook.Write(sw);
+                MessageBox.Show("File generated successfully in" + Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\Agile-Mac.xlsx");
             }
             catch(Exception error)
             {
@@ -142,6 +174,139 @@ namespace Smanager
             this.numericUpDown3.Value = 0;
         }
 
-      
+        private void button5_Click(object sender, EventArgs e)
+        {
+            IWorkbook workbook = null;
+            using (FileStream fs = File.Open(inputFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                workbook = new XSSFWorkbook(fs);
+                fs.Close();
+
+                ISheet sheet = workbook.GetSheetAt(0);
+                int index=0,count = 0;
+                string macAddress;
+                string pppoeusername;
+                string pppoepassword;
+                string ipaddress;
+                string mask;
+                string gateway;
+                string dns;
+                string ssid2;
+                string ssid5;
+
+                IRow titlerow = sheet.GetRow(index);
+                ICell titlecell = titlerow.GetCell(1);
+
+                if (!Directory.Exists(outputPath + @"\macbin"))
+                {
+                    Directory.CreateDirectory(outputPath + @"\macbin");
+                }
+
+                if (titlecell.ToString() == "PPPoE Username")
+                {
+                    while (sheet.GetRow(index) != null && sheet.GetRow(index).GetCell(0) != null && !string.IsNullOrEmpty(sheet.GetRow(index).GetCell(0).ToString()))
+                    {
+                        count++;
+                        index++;
+                    }
+
+                    for (index = 1; index < Convert.ToInt32(count); index++)
+                    {
+                        IRow row = sheet.GetRow(index);
+                        macAddress = row.GetCell(0).ToString();
+                        pppoeusername = row.GetCell(1).ToString();
+                        pppoepassword = row.GetCell(2).ToString();
+                        ssid2 = row.GetCell(3).ToString();
+                        ssid5 = row.GetCell(4).ToString();
+
+                        MessageBox.Show(macAddress + pppoeusername + pppoepassword + ssid2 + ssid5);
+                        XmlDocument xmldoc = new XmlDocument();
+
+                        try
+                        {
+                            xmldoc.Load(mainPath + @"\PPPoE.xml");
+                            XmlNode xn = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/LANDevice/WLANConfiguration[@instance=1]/SSID");
+                            xn.Attributes["val"].Value = ssid2;
+                            XmlNode xn_ssid5 = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/LANDevice/WLANConfiguration[@instance=2]/SSID");
+                            xn_ssid5.Attributes["val"].Value = ssid5;
+                            XmlNode xn_pppuser = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/WANDevice[@instance=1]/WANConnectionDevice[@instance=1]/WANPPPConnection[@instance=1]/Username");
+                            xn_pppuser.Attributes["val"].Value = pppoeusername;
+                            XmlNode xn_ppppwd = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/WANDevice[@instance=1]/WANConnectionDevice[@instance=1]/WANPPPConnection[@instance=1]/Password");
+                            xn_ppppwd.Attributes["val"].Value = pppoepassword;
+                            xmldoc.Save(outputPath + "/macbin" + @"/"+macAddress+".xml");
+
+                            MessageBox.Show(outputPath + @"\macbin" + @"\" + macAddress + ".xml");
+                        }
+                        catch (Exception error)
+                        {
+                            MessageBox.Show(error.Message);
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    while (sheet.GetRow(index) != null && sheet.GetRow(index).GetCell(0) != null && !string.IsNullOrEmpty(sheet.GetRow(index).GetCell(0).ToString()))
+                    {
+                        count++;
+                        index++;
+                    }
+
+                    for (index = 1; index < Convert.ToInt32(count); index++)
+                    {
+                        IRow row = sheet.GetRow(index);
+                        macAddress = row.GetCell(0).ToString();
+                        ipaddress = row.GetCell(1).ToString();
+                        mask = row.GetCell(2).ToString();
+                        gateway = row.GetCell(3).ToString();
+                        dns = row.GetCell(4).ToString();
+                        ssid2 = row.GetCell(5).ToString();
+                        ssid5 = row.GetCell(6).ToString();
+
+                        MessageBox.Show(macAddress + ipaddress + mask + ssid2 + ssid5);
+                        XmlDocument xmldoc = new XmlDocument();
+
+                        try
+                        {
+                            xmldoc.Load(mainPath + @"\Static.xml");
+                            XmlNode xn = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/LANDevice/WLANConfiguration[@instance=1]/SSID");
+                            xn.Attributes["val"].Value = ssid2;
+                            XmlNode xn_ssid5 = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/LANDevice/WLANConfiguration[@instance=2]/SSID");
+                            xn_ssid5.Attributes["val"].Value = ssid5;
+                            XmlNode xn_ipaddr = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/WANDevice[@instance=1]/WANConnectionDevice[@instance=1]/WANIPConnection[@instance=1]/ExternalIPAddress");
+                            xn_ipaddr.Attributes["val"].Value = ipaddress;
+                            XmlNode xn_mask = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/WANDevice[@instance=1]/WANConnectionDevice[@instance=1]/WANIPConnection[@instance=1]/SubnetMask");
+                            xn_mask.Attributes["val"].Value = mask;
+                            XmlNode xn_gateway = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/WANDevice[@instance=1]/WANConnectionDevice[@instance=1]/WANIPConnection[@instance=1]/DefaultGateway");
+                            xn_gateway.Attributes["val"].Value = gateway;
+                            XmlNode xn_dns = xmldoc.SelectSingleNode("/DslCpeConfig/InternetGatewayDevice/WANDevice[@instance=1]/WANConnectionDevice[@instance=1]/WANIPConnection[@instance=1]/DNSServers");
+                            xn_dns.Attributes["val"].Value = dns;
+                            xmldoc.Save(outputPath + "/macbin" + @"/" + macAddress + ".xml");
+
+                            MessageBox.Show(outputPath + @"\macbin" + @"\" + macAddress + ".xml");
+                        }
+                        catch (Exception error)
+                        {
+                            MessageBox.Show(error.Message);
+                        }
+
+                    }
+                }
+
+
+                
+            }
+            
+            
+        }
+
+
+
+        public string mainPath { get; set; }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

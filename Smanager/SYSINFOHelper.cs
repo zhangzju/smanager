@@ -81,7 +81,7 @@ namespace Smanager
             }
         }
 
-        private string GetMacAddress()
+        public static string GetMacAddress()
         {
             try
             {

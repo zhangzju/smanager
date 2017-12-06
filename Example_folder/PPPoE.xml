@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DslCpeConfig>
+    <InternetGatewayDevice>
+        <LANDevice instance="1">
+            <WLANConfiguration instance="1">
+                <SSID val="TP-Link_0969" />
+            </WLANConfiguration>
+            <WLANConfiguration instance="2">
+                <SSID val="TP-Link_0969_5G" />
+            </WLANConfiguration>
+        </LANDevice>
+        <Layer3Forwarding>
+			<__ifAliasName val="pppoe_eth" />
+		</Layer3Forwarding>
+        <WANDevice instance="1">
+            <WANConnectionNumberOfEntries val="1" />
+            <WANConnectionDevice instance="1">
+                <WANPPPConnectionNumberOfEntries val="1" />
+                <WANEthernetLinkConfig>
+                    <Enable val="1" />
+                    <X_TP_Used val="1" />
+                    <EthernetLinkStatus val="Up" />
+                    <X_TP_IfName val="eth0.2" />
+                </WANEthernetLinkConfig>
+                <WANPPPConnection instance="1">
+                    <Enable val="1" />
+                    <Name val="pppoe_eth" />
+                    <Username val="" />
+                    <Password val="" />
+                    <X_TP_ConnectionId val="2" />
+                    <X_TP_IfName val="ppp0" />
+                    <X_TP_L2IfName val="eth0.2" />
+                </WANPPPConnection>
+                <WANPPPConnection nextInstance="2" />
+            </WANConnectionDevice>
+            <WANConnectionDevice nextInstance="2" />
+        </WANDevice>
+    </InternetGatewayDevice>
+</DslCpeConfig>

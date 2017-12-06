@@ -37,6 +37,15 @@ namespace Smanager
             this.comboBox2.Text = "Model";
             this.button3.BackColor = System.Drawing.Color.Red;
             this.button4.BackColor = System.Drawing.Color.Red;
+
+            this.comboBox1.Enabled = false;
+            this.comboBox1.Enabled = false;
+            this.comboBox2.Enabled = false;
+            this.comboBox2.Enabled = false;
+            this.button2.Enabled = false;
+            this.button5.Enabled = false;
+            this.button6.Enabled = false;
+            this.button7.Enabled = false;
         }
 
         private void PClock (string lockFile)
@@ -49,13 +58,56 @@ namespace Smanager
                 ispName = table["isp"].ToString();
                 modelName = table["model"].ToString();
                 this.comboBox1.Text = ispName;
-                this.comboBox1.DropDownStyle = comboBox1.DropDownStyle;
                 this.comboBox2.Text = modelName;
-                this.comboBox2.DropDownStyle = comboBox2.DropDownStyle;
+                this.comboBox1.Enabled = false;
+                this.comboBox1.Enabled = false;
+                this.comboBox2.Enabled = false;
+                this.comboBox2.Enabled = false;
+                this.button2.Enabled = false;
+                this.button5.Enabled = false;
+                this.button6.Enabled = false;
+                this.button7.Enabled = false;
+            }
+            else if(lockName == "develop")
+            {
+                ispName = table["isp"].ToString();
+                modelName = table["model"].ToString();
+                this.comboBox1.Text = ispName;
+                this.comboBox2.Text = modelName;
+                this.comboBox1.Enabled = true;
+                this.comboBox1.Enabled = true;
+                this.comboBox2.Enabled = true;
+                this.comboBox2.Enabled = true;
+                this.button2.Enabled = true;
+                this.button5.Enabled = true;
+                this.button6.Enabled = true;
+                this.button7.Enabled = true;
             }
 
             string netlock = table["netlock"].ToString();
             string maclock = table["maclock"].ToString();
+            string localMAC = SYSINFOHelper.GetMacAddress();
+
+            if (maclock == "free")
+            {
+                //MessageBox.Show(AESHelper.AESEncrypt(localMAC));
+            }
+            else if (AESHelper.AESDecrypt(maclock) == SYSINFOHelper.GetMacAddress())
+            {
+                //MessageBox.Show(AESHelper.AESDecrypt(maclock));
+            }
+            else
+            {
+                UTILITYHelper.ShowError("Permission denied! You have no right to run this program!");
+                this.comboBox1.Enabled = false;
+                this.comboBox1.Enabled = false;
+                this.comboBox2.Enabled = false;
+                this.comboBox2.Enabled = false;
+                this.button2.Enabled = false;
+                this.button5.Enabled = false;
+                this.button6.Enabled = false;
+                this.button7.Enabled = false;
+            }
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -184,18 +236,23 @@ namespace Smanager
             }
             else
             {
-                MessageBox.Show("Invalid path(Error code 002!)\n");
+                MessageBox.Show("Invalid path(Error code 002!)!");
             }
-            MessageBox.Show(serverPath + "\\lock.json");
+
             this.textBox1.Text = mainFolder.SelectedPath;
-
-            DirectoryInfo TheFolder = new DirectoryInfo(mainFolder.SelectedPath);
-            foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories())
+            try
             {
-                this.comboBox1.Items.Add(NextFolder.Name);
+                DirectoryInfo TheFolder = new DirectoryInfo(mainFolder.SelectedPath);
+                this.comboBox1.Items.Clear();
+                foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories())
+                {              
+                    this.comboBox1.Items.Add(NextFolder.Name);
+                }
             }
-
-            //configTftpPath(serverPath);
+            catch (Exception error)
+            {
+                MessageBox.Show("Invalid path(Error code 001!)!");
+            }        
         }
 
         private void Label3_Click(object sender, EventArgs e)
@@ -205,13 +262,13 @@ namespace Smanager
 
         private void Button2_Click_1(object sender, EventArgs e)
         {
-            macbin macbin = new macbin();
+            macbin macbin = new macbin(serverPath, ispName, modelName);
             macbin.Show();
         }
 
         private void Button6_Click(object sender, EventArgs e)
         {
-            Server server = new Server();
+            Server server = new Server(serverPath+ispName+modelName);
             server.Show();
         }
 
@@ -249,7 +306,6 @@ namespace Smanager
                 }
                 else
                 {
-                    //MessageBox.Show("Warning: the port of TFTP is occupied!");
                     this.richTextBox1.AppendText("Warning: the port of TFTP is occupied!\n");
 
                 }
@@ -320,8 +376,7 @@ namespace Smanager
                 Console.WriteLine("Exception Occurred :{0},{1}", ex.Message, ex.StackTrace.ToString());
                 return -1;
             }
-            //MessageBox.Show("TFTP started");
-            this.richTextBox1.AppendText("TFTP started\n");
+            this.richTextBox1.AppendText("TFTP started.\n");
             return 0;
         }
 
@@ -349,7 +404,7 @@ namespace Smanager
                 return -1;
             }
             //MessageBox.Show("DHCP started");
-            this.richTextBox1.AppendText("DHCP started\n");
+            this.richTextBox1.AppendText("DHCP started.\n");
             return 0;
         }
 
@@ -372,7 +427,7 @@ namespace Smanager
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //MessageBox.Show(serverPath + "\\" + this.comboBox1.Text);
+            this.comboBox2.Items.Clear();
             DirectoryInfo TheFolder = new DirectoryInfo(serverPath + "/" + this.comboBox1.Text);
             foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories())
             {
@@ -409,7 +464,7 @@ namespace Smanager
             }
             else
             {
-                MessageBox.Show("This dir is invalid!");
+                MessageBox.Show("Invalid path!(Error code 003)");
             }
         }
 
@@ -418,7 +473,7 @@ namespace Smanager
             string initInfo = File.ReadAllText(initFile);
             var table = JObject.Parse(initInfo);
             string unionPath = serverPath + "\\" + ispName + "\\" + modelName + @"\union.bin";
-            MessageBox.Show(unionPath);
+            //MessageBox.Show(unionPath);
             BinaryWriter unionFileWriter = new BinaryWriter(new FileStream(unionPath, FileMode.OpenOrCreate, FileAccess.ReadWrite));
 
             unionFileWriter.Seek(0, SeekOrigin.Begin);
@@ -429,8 +484,23 @@ namespace Smanager
             unionFileWriter.Seek(0, SeekOrigin.Begin);
             unionFileWriter.Write(initInfoByte, 0, initInfoByte.Length);
 
+            string configflag = "0";
+            string kernelflag = "0";
+            string rootfsflag = "0";
+            string webflag = "0";
+            try
+            {
+                configflag = table["config"]["flag"].ToString();
+                kernelflag = table["kernel"]["flag"].ToString();
+                rootfsflag = table["rootfs"]["flag"].ToString();
+                webflag = table["web"]["flag"].ToString();
+            }
+            catch (Exception error)
+            {
+                UTILITYHelper.ShowError("Wrong format of table!");
+            }
 
-            if(table["config"]["flag"].ToString() == "1")
+            if(configflag == "1")
             {
                 string filename = table["config"]["name"].ToString();
                 string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
@@ -440,9 +510,10 @@ namespace Smanager
                 byte[] confByte = confStream.ReadBytes(size * 1024);
                 unionFileWriter.Seek(4 * 1024, SeekOrigin.Begin);
                 unionFileWriter.Write(confByte, 0, confByte.Length);
+                confStream.Close();
             }
 
-            if(table["kernel"]["flag"].ToString() == "1")
+            if(kernelflag == "1")
             {
                 string filename = table["kernel"]["name"].ToString();
                 string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
@@ -452,10 +523,10 @@ namespace Smanager
                 byte[] confByte = kernelStream.ReadBytes(size * 1024);
                 unionFileWriter.Seek(offset * 1024, SeekOrigin.Begin);
                 unionFileWriter.Write(confByte, 0, confByte.Length);
-
+                kernelStream.Close();
             }
 
-            if (table["rootfs"]["flag"].ToString() == "1")
+            if (rootfsflag == "1")
             {
                 string filename = table["rootfs"]["name"].ToString();
                 string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
@@ -465,23 +536,23 @@ namespace Smanager
                 byte[] rootfsByte = rootfsStream.ReadBytes(size * 1024);
                 unionFileWriter.Seek(offset * 1024, SeekOrigin.Begin);
                 unionFileWriter.Write(rootfsByte, 0, rootfsByte.Length);
-
+                rootfsStream.Close();
             }
 
-            if (table["rootfs"]["web"].ToString() == "1")
+            if (webflag == "1")
             {
-                string filename = table["rootfs"]["name"].ToString();
+                string filename = table["web"]["name"].ToString();
                 string fullpath = serverPath + "\\" + ispName + "\\" + modelName + "\\" + filename;
-                Int32 size = Convert.ToInt32(table["rootfs"]["size"].ToString());
-                Int32 offset = Convert.ToInt32(table["rootfs"]["offset"].ToString());
-                BinaryReader rootfsStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
-                byte[] rootfsByte = rootfsStream.ReadBytes(size * 1024);
+                Int32 size = Convert.ToInt32(table["web"]["size"].ToString());
+                Int32 offset = Convert.ToInt32(table["web"]["offset"].ToString());
+                BinaryReader webStream = new BinaryReader(new FileStream(fullpath, FileMode.Open, FileAccess.ReadWrite));
+                byte[] webByte = webStream.ReadBytes(size * 1024);
                 unionFileWriter.Seek(offset * 1024, SeekOrigin.Begin);
-                unionFileWriter.Write(rootfsByte, 0, rootfsByte.Length);
-
+                unionFileWriter.Write(webByte, 0, webByte.Length);
+                webStream.Close();
             }
 
-
+            richTextBox1.AppendText("Union.bin is refreshed!\n");
             unionFileWriter.Close();
             return 0;
         }
@@ -534,6 +605,11 @@ namespace Smanager
             {
                 INIOperationClass.INIWriteValue(tftpFile, section, node, value);
             }
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -98,6 +98,7 @@
       <DependentUpon>Server.cs</DependentUpon>
     </Compile>
     <Compile Include="SYSINFOHelper.cs" />
+    <Compile Include="UTILITYHelper.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

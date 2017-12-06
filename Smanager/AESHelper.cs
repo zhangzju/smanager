@@ -68,5 +68,20 @@ namespace Smanager
             }
             return Encoding.UTF8.GetString(decryptBytes).Replace("\0", "");   ///将字符串后尾的'\0'去掉
         }
+
+        public static string Base64Encode(Encoding encodeType, string source)
+        {
+            string encode = string.Empty;
+            byte[] bytes = encodeType.GetBytes(source);
+            try
+            {
+                encode = Convert.ToBase64String(bytes);
+            }
+            catch
+            {
+                encode = source;
+            }
+            return encode;
+        }
     }
 }
