@@ -480,7 +480,7 @@ namespace Smanager
             //byte[] initInfoByte = System.Text.Encoding.Default.GetBytes(initInfo);
 
             BinaryReader initInfoStream = new BinaryReader(new FileStream(initFile, FileMode.OpenOrCreate, FileAccess.ReadWrite));
-            byte[] initInfoByte = initInfoStream.ReadBytes(4 * 128);
+            byte[] initInfoByte = initInfoStream.ReadBytes(8 * 128); //Change the byte length, make sure the table.json is loaded completely
             unionFileWriter.Seek(0, SeekOrigin.Begin);
             unionFileWriter.Write(initInfoByte, 0, initInfoByte.Length);
 
