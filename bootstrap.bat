@@ -14,6 +14,10 @@ if exist Smanager/TFTP (
 		echo "No TFTP modules found!"
 )
 
+if exist Smanager\bin\Debug\ (
+		xcopy lib\ Smanager\bin\Debug\ /s /e /y
+)
+
 if exist Example_folder (
 		echo "initialize example folder"
 		md Smanager\bin\Debug\example
