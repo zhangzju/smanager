@@ -611,5 +611,17 @@ namespace Smanager
         {
 
         }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox2.Checked == true)
+            {
+                protocol[7] = '1';
+            }
+            else if (this.checkBox2.Checked == false)
+            {
+                protocol[7] = '0';
+            }
+        }
     }
 }

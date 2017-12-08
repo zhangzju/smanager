@@ -48,12 +48,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox2);
             this.groupBox1.Controls.Add(this.button7);
             this.groupBox1.Controls.Add(this.checkBox4);
             this.groupBox1.Controls.Add(this.button2);
@@ -74,9 +76,9 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(230, 75);
+            this.button7.Location = new System.Drawing.Point(246, 75);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(109, 23);
+            this.button7.Size = new System.Drawing.Size(93, 23);
             this.button7.TabIndex = 11;
             this.button7.Text = "Union.bin gen";
             this.button7.UseVisualStyleBackColor = true;
@@ -85,7 +87,7 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(164, 80);
+            this.checkBox4.Location = new System.Drawing.Point(184, 79);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(60, 16);
             this.checkBox4.TabIndex = 10;
@@ -106,7 +108,7 @@
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(98, 80);
+            this.checkBox3.Location = new System.Drawing.Point(125, 79);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(60, 16);
             this.checkBox3.TabIndex = 8;
@@ -117,11 +119,11 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(20, 80);
+            this.checkBox1.Location = new System.Drawing.Point(5, 79);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(72, 16);
+            this.checkBox1.Size = new System.Drawing.Size(48, 16);
             this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "conf.bin";
+            this.checkBox1.Text = "Conf";
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
@@ -262,6 +264,17 @@
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(52, 79);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(66, 16);
+            this.checkBox2.TabIndex = 12;
+            this.checkBox2.Text = "Web.zip";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -301,6 +314,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.CheckBox checkBox2;
     }
 }
 
