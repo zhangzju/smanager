@@ -254,14 +254,23 @@ namespace Smanager
 
                     for (index = 1; index < Convert.ToInt32(count); index++)
                     {
-                        IRow row = sheet.GetRow(index);
-                        macAddress = row.GetCell(0).ToString();
-                        ipaddress = row.GetCell(1).ToString();
-                        mask = row.GetCell(2).ToString();
-                        gateway = row.GetCell(3).ToString();
-                        dns = row.GetCell(4).ToString();
-                        ssid2 = row.GetCell(5).ToString();
-                        ssid5 = row.GetCell(6).ToString();
+                        try
+                        {
+                            IRow row = sheet.GetRow(index);
+                            macAddress = row.GetCell(0).ToString();
+                            ipaddress = row.GetCell(1).ToString();
+                            mask = row.GetCell(2).ToString();
+                            gateway = row.GetCell(3).ToString();
+                            dns = row.GetCell(4).ToString();
+                            ssid2 = row.GetCell(5).ToString();
+                            ssid5 = row.GetCell(6).ToString();
+                        }
+                        catch (Exception error)
+                        {
+                            UTILITYHelper.ShowError("Wrong format Macbin file!");
+                            break;
+                        }
+                        
 
                         MessageBox.Show(macAddress + ipaddress + mask + ssid2 + ssid5);
                         XmlDocument xmldoc = new XmlDocument();
