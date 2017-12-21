@@ -268,7 +268,7 @@ namespace Smanager
 
         private void Button6_Click(object sender, EventArgs e)
         {
-            Server server = new Server(serverPath+ispName+modelName);
+            Server server = new Server(serverPath+@"\"+ispName+@"\"+modelName);
             server.Show();
         }
 
